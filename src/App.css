@@ -7,6 +7,39 @@
   pointer-events: none;
 }
 
+input {
+  width: 250px;
+  height: 40px;
+  font-size: 1.15rem;
+}
+
+.title{
+  font-size: 3rem;
+}
+
+.btn_wrapper{
+  margin-top: 1rem;
+}
+
+.btn {
+  display: block;
+  text-align: center;
+  vertical-align: middle;
+  text-decoration: none;
+  width: 120px;
+  margin: auto;
+  padding: 1rem 2rem;
+  font-weight: bold;
+  border: 2px solid #27acd9;
+  color: #27acd9;
+  transition: 0.5s;
+}
+
+.btn:hover {
+  color: #fff;
+  background: #27acd9;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
