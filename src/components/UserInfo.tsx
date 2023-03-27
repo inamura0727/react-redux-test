@@ -7,14 +7,14 @@ type User = {
   address: string;
 };
 
-const DummyUser = {
-  id: 0,
-  username: 'ゲスト',
-  address: 'ネブカドネザル号',
-};
+// const DummyUser = {
+//   id: 0,
+//   username: 'ゲスト',
+//   address: 'ネブカドネザル号',
+// };
 
 const UserInfo = () => {
-  const [user, setUser] = useState<User>();
+  const [user, setUser] = useState<User | null>(null);
   const fetchJSON = async () => {
     const res = await axios.get('http://localhost:8000/users/1');
     return res.data;
@@ -25,15 +25,17 @@ const UserInfo = () => {
       const user: User = await fetchJSON();
       setUser(user);
     };
-    if (!user) {
-      setUser(DummyUser);
-    }
     fetchUser();
   }, []);
   return (
     <div>
-      <p>こんにちは、{user?.username}さん！</p> <p>やることあったら書いて〜</p>
-      <p>最近{user?.address}はどう？？</p>
+      {user ? (
+        <div>
+          <p>こんにちは、{user.username}さん！</p>{' '}
+          <p>やることあったら書いて〜</p>
+          <p>最近{user.address}はどう？？</p>
+        </div>
+      ) : null}
     </div>
   );
 };
