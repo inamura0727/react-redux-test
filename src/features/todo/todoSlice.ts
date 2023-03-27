@@ -24,7 +24,6 @@ export const todoSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(fetchJSONServerGet.fulfilled, (state, action) => {
-      console.log(action.payload);
       state.todos = action.payload;
       state.amount = action.payload.length;
     });
@@ -38,5 +37,7 @@ export const selectTodos = (state: { todo: { todos: Todo[] } }) =>
   state.todo.todos;
 export const selectAmount = (state: { todo: { amount: number } }) =>
   state.todo.amount;
+export const selectFailed = (state: { todo: { failed: string } }) =>
+  state.todo.failed;
 
 export default todoSlice.reducer;

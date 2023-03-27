@@ -55,4 +55,19 @@ describe('Redux Async API Mocking', () => {
       }),
     ).toBeInTheDocument();
   });
+  it('[fetch failed] should display error msg, no render', async () => {
+    server.use(
+      rest.get('http://localhost:8000/todos', (req, res, ctx) => {
+        return res(ctx.status(404));
+      }),
+    );
+    render(
+      <Provider store={store}>
+        <Todolist />
+      </Provider>,
+    );
+    expect(screen.queryByRole('listitem')).toBeNull();
+    await userEvent.click(screen.getByText('fetchJSONServer'));
+    expect(await screen.findByText('Fetch Failed')).toBeInTheDocument();
+  });
 });

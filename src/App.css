@@ -13,11 +13,11 @@ input {
   font-size: 1.15rem;
 }
 
-.title{
+.title {
   font-size: 3rem;
 }
 
-.btn_wrapper{
+.btn_wrapper {
   margin-top: 1rem;
 }
 
@@ -38,6 +38,11 @@ input {
 .btn:hover {
   color: #fff;
   background: #27acd9;
+}
+
+.alermText {
+  font-size: 1.25rem;
+  color: red;
 }
 
 @media (prefers-reduced-motion: no-preference) {
