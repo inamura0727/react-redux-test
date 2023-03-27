@@ -4,7 +4,7 @@ import {
   selectTodos,
   selectAmount,
   fetchJSONServerGet,
-  selectFailed,
+  selectStatus,
 } from '../features/todo/todoSlice';
 import { AppDispatch } from '../store';
 
@@ -12,7 +12,8 @@ const Todolist = () => {
   const dispatch = useDispatch<AppDispatch>();
   const todos = useSelector(selectTodos);
   const amount = useSelector(selectAmount);
-  const failed = useSelector(selectFailed);
+  const status = useSelector(selectStatus);
+  console.log(status)
 
   return (
     <div>
@@ -23,14 +24,17 @@ const Todolist = () => {
       <div>
         <p>Total todos: {amount}</p>
       </div>
-      <p data-testid="fetchFailed" className="alermText">
-        {failed}
-      </p>
+      {status === 'Fetch Failed' && (
+        <p data-testid="fetchFailed" className="alermText">
+          Fetch Failed
+        </p>
+      )}
       <ul>
         {todos.map((todo) => (
           <li key={todo.id}>
             {todo.todo}{' '}
             <span>{todo.completed ? <p>done </p> : <p>not yet</p>}</span>
+            <button>削除</button>
           </li>
         ))}
       </ul>

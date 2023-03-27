@@ -40,7 +40,7 @@ describe('Redux Async API Mocking', () => {
       },
     });
   });
-  it('[fetch failed] should display todos in ul tag', async () => {
+  it('[fetch success] should display todos in ul tag', async () => {
     render(
       <Provider store={store}>
         <Todolist />
@@ -68,6 +68,7 @@ describe('Redux Async API Mocking', () => {
     );
     expect(screen.queryByRole('listitem')).toBeNull();
     await userEvent.click(screen.getByText('fetchJSONServer'));
-    expect(await screen.findByText('Fetch Failed')).toBeInTheDocument();
+    const error = await screen.findByTestId('fetchFailed');
+    expect(error).toHaveTextContent('Fetch Failed');
   });
 });
