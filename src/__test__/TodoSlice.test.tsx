@@ -13,6 +13,7 @@ const server = setupServer(
   rest.get('http://localhost:8000/todos', (req, res, ctx) => {
     return res(
       ctx.status(200),
+      // 配列で渡されるので、配列に入れた形にする
       ctx.json([{ id: 0, todo: 'Dummy', completed: false }]),
     );
   }),
