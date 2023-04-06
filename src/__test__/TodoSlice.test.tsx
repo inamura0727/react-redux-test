@@ -4,12 +4,11 @@ import userEvent from '@testing-library/user-event';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { Provider } from 'react-redux';
-import { AnyAction, configureStore, ThunkMiddleware } from '@reduxjs/toolkit';
+import { AnyAction, configureStore, Store } from '@reduxjs/toolkit';
 import todoReducer from '../features/todo/todoSlice';
 import Todolist from '../components/Todolist';
-import { ToolkitStore } from '@reduxjs/toolkit/dist/configureStore';
 
-const server = setupServer(
+const handlers = [
   rest.get('http://localhost:8000/todos', (req, res, ctx) => {
     return res(
       ctx.status(200),
@@ -17,7 +16,22 @@ const server = setupServer(
       ctx.json([{ id: 0, todo: 'Dummy', completed: false }]),
     );
   }),
-);
+  rest.post('http://localhost:8000/todos', (req, res, ctx) => {
+    return res(
+      ctx.status(201),
+      ctx.json({
+        id: 'test',
+        todo: 'test',
+        completed: false,
+      }),
+    );
+  }),
+  rest.post('http://localhost:8000/todos', (req, res, ctx) => {
+    return res(ctx.status(200));
+  }),
+];
+
+const server = setupServer(...handlers);
 
 beforeEach(() => server.listen());
 afterEach(() => {
@@ -28,11 +42,7 @@ afterEach(() => {
 afterAll(async () => server.close());
 
 describe('Redux Async API Mocking', () => {
-  let store: ToolkitStore<
-    { todo: { todos: string[] } },
-    AnyAction,
-    [ThunkMiddleware]
-  >;
+  let store: Store<unknown, AnyAction>;
   beforeEach(() => {
     store = configureStore({
       reducer: {
@@ -40,35 +50,35 @@ describe('Redux Async API Mocking', () => {
       },
     });
   });
-  it('[fetch success] should display todos in ul tag', async () => {
+  it('1: should render all the elemnt creectly', () => {
     render(
       <Provider store={store}>
         <Todolist />
       </Provider>,
     );
-    expect(screen.queryByRole('listitem')).toBeNull();
-    await userEvent.click(screen.getByText('fetchJSONServer'));
-    expect(
-      await screen.findByText((content, element) => {
-        /*2つの引数contentとelementを受け取る。contentは検索対象のテキスト、elementは現在の要素です。この関数では、要素がliタグであり、テキストがDummyである場合に、要素が一致したとみなす*/
-        return element?.tagName.toLowerCase() === 'li' && content === 'Dummy';
-      }),
-    ).toBeInTheDocument();
+    expect(screen.getByText('TODO LIST')).toBeInTheDocument();
   });
-  it('[fetch failed] should display error msg, no render', async () => {
-    server.use(
-      rest.get('http://localhost:8000/todos', (req, res, ctx) => {
-        return res(ctx.status(404));
-      }),
-    );
+  it('2: should render the list of todos from REST API', async () => {
     render(
       <Provider store={store}>
         <Todolist />
       </Provider>,
     );
-    expect(screen.queryByRole('listitem')).toBeNull();
-    await userEvent.click(screen.getByText('fetchJSONServer'));
-    const error = await screen.findByTestId('fetchFailed');
-    expect(error).toHaveTextContent('Fetch Failed');
+    expect(screen.queryByText('Dummy')).toBeNull();
+    expect(await screen.findByText('Dummy')).toBeInTheDocument();
+  });
+  it('3: should add new todo and also to the list', async () => {
+    render(
+      <Provider store={store}>
+        <Todolist />
+      </Provider>,
+    );
+    expect(screen.queryByText('test')).toBeNull();
+    const inputValue = screen.getByPlaceholderText(
+      'Input things you have to do',
+    );
+    await userEvent.type(inputValue, 'test');
+    await userEvent.click(screen.getByTestId('post-btn'));
+    expect(await screen.findByText('test')).toBeInTheDocument();
   });
 });

@@ -1,16 +1,18 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { stat } from 'fs';
+import { Todo } from '../../../types/todo';
 
 const initialState = {
-  todos: [],
+  todos: [
+    {
+      id: '',
+      todo: '',
+      completed: false,
+    },
+  ],
   amount: 0,
   status: '',
-};
-
-type Todo = {
-  id: number;
-  todo: string;
-  completed: boolean;
 };
 
 // わざとpending状態にしたいがための関数
@@ -25,19 +27,20 @@ export const fetchJSONServerGet = createAsyncThunk('fetch/apiGET', async () => {
   return res.data;
 });
 
+const createUuid = () => {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (a) => {
+    let r = (new Date().getTime() + Math.random() * 16) % 16 | 0,
+      v = a == 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
+
 export const fetchJSONPost = createAsyncThunk(
   'fetch/apiPOST',
-  async (req: string) => {
+  async (req: string): Promise<Todo> => {
     // uuid作成
-    const createUuid = () => {
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (a) => {
-        let r = (new Date().getTime() + Math.random() * 16) % 16 | 0,
-          v = a == 'x' ? r : (r & 0x3) | 0x8;
-        return v.toString(16);
-      });
-    };
     let id = createUuid();
-    await sleep(3000);
+
     const res = await axios.post('http://localhost:8000/todos', {
       id: id,
       todo: req,
@@ -45,6 +48,14 @@ export const fetchJSONPost = createAsyncThunk(
     });
     const data = res.data;
     return data;
+  },
+);
+
+export const fetchJSONDelete = createAsyncThunk(
+  'fetch/apiDelete',
+  async (id: string) => {
+    await axios.delete(`http://localhost:8000/todos/${id}`);
+    return id;
   },
 );
 
@@ -65,12 +76,23 @@ export const todoSlice = createSlice({
       state.status = 'Pending';
     });
     builder.addCase(fetchJSONPost.fulfilled, (state, action) => {
+      state.todos = [...state.todos, action.payload];
       state.status = 'Succeded!';
     });
     builder.addCase(fetchJSONPost.pending, (state, action) => {
       state.status = 'Pending';
     });
     builder.addCase(fetchJSONPost.rejected, (state, action) => {
+      state.status = 'Fatch Failed';
+    });
+    builder.addCase(fetchJSONDelete.fulfilled, (state, action) => {
+      state.todos = state.todos.filter((todo) => todo.id !== action.payload);
+      state.status = 'Succeded!';
+    });
+    builder.addCase(fetchJSONDelete.pending, (state, action) => {
+      state.status = 'Pending';
+    });
+    builder.addCase(fetchJSONDelete.rejected, (state, action) => {
       state.status = 'Fatch Failed';
     });
   },
