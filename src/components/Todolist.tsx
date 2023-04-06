@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   selectTodos,
@@ -7,20 +7,23 @@ import {
   selectStatus,
 } from '../features/todo/todoSlice';
 import { AppDispatch } from '../store';
+import DeleteBtn from './DeleteBtn';
+import Form from './Form';
 
 const Todolist = () => {
   const dispatch = useDispatch<AppDispatch>();
   const todos = useSelector(selectTodos);
   const amount = useSelector(selectAmount);
   const status = useSelector(selectStatus);
-  console.log(status)
 
+  useEffect(() => {
+    dispatch(fetchJSONServerGet());
+  }, [dispatch]);
+
+  console.log(todos);
   return (
     <div>
-      <h1>Todolist</h1>
-      <button onClick={() => dispatch(fetchJSONServerGet())}>
-        fetchJSONServer
-      </button>
+      <Form />
       <div>
         <p>Total todos: {amount}</p>
       </div>
@@ -32,9 +35,9 @@ const Todolist = () => {
       <ul>
         {todos.map((todo) => (
           <li key={todo.id}>
-            {todo.todo}{' '}
+            {todo.todo}
             <span>{todo.completed ? <p>done </p> : <p>not yet</p>}</span>
-            <button>削除</button>
+            <DeleteBtn id={todo.id} />
           </li>
         ))}
       </ul>
