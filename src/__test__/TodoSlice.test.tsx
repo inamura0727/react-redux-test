@@ -29,6 +29,10 @@ const handlers = [
   rest.post('http://localhost:8000/todos', (req, res, ctx) => {
     return res(ctx.status(200));
   }),
+
+  rest.delete('http://localhost:8000/todos/0', (req, res, ctx) => {
+    return res(ctx.status(200));
+  }),
 ];
 
 const server = setupServer(...handlers);
@@ -80,5 +84,17 @@ describe('Redux Async API Mocking', () => {
     await userEvent.type(inputValue, 'test');
     await userEvent.click(screen.getByTestId('post-btn'));
     expect(await screen.findByText('test')).toBeInTheDocument();
+  });
+  it('4: should delete id 0 and also from the list', async () => {
+    render(
+      <Provider store={store}>
+        <Todolist />
+      </Provider>,
+    );
+    expect(screen.queryByText('Dummy')).toBeNull();
+    expect(await screen.findByText('Dummy')).toBeInTheDocument();
+    await userEvent.click(screen.getByTestId('delete-btn-0'));
+    expect(await screen.findByText('Succeded!')).toBeInTheDocument();
+    expect(screen.queryByText('Dummy')).toBeNull();
   });
 });

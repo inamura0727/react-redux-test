@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   selectTodos,
@@ -20,7 +20,6 @@ const Todolist = () => {
     dispatch(fetchJSONServerGet());
   }, [dispatch]);
 
-  console.log(todos);
   return (
     <div>
       <Form />
@@ -32,6 +31,7 @@ const Todolist = () => {
           Fetch Failed
         </p>
       )}
+      {status === 'Succeded!' && <p>Succeded!</p>}
       <ul>
         {todos.map((todo) => (
           <li key={todo.id}>
