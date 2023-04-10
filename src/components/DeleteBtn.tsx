@@ -1,5 +1,5 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   fetchJSONServerGet,
   selectStatus,
@@ -9,13 +9,18 @@ import { AppDispatch } from '../store';
 
 const DeleteBtn = ({ id }: { id: string }) => {
   const dispacth = useDispatch<AppDispatch>();
+  const status = useSelector(selectStatus);
 
-  const handleClikc = async () => {
-    await dispacth(fetchJSONDelete(id));
+  const handleClikc = async (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+    const result = await dispacth(fetchJSONDelete(id));
   };
+
   return (
     <div>
-      <button onClick={handleClikc}>削除</button>
+      <button data-testid={`delete-btn-${id}`} onClick={handleClikc}>
+        削除
+      </button>
     </div>
   );
 };
