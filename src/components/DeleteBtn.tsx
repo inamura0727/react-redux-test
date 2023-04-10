@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { act } from 'react-dom/test-utils';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   fetchJSONServerGet,
@@ -13,7 +14,9 @@ const DeleteBtn = ({ id }: { id: string }) => {
 
   const handleClikc = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    const result = await dispacth(fetchJSONDelete(id));
+    act(() => {
+      dispacth(fetchJSONDelete(id));
+    });
   };
 
   return (

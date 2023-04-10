@@ -18,8 +18,6 @@ const Form = () => {
   const dispatch = useDispatch<AppDispatch>();
   const status = useSelector(selectStatus);
 
-
-
   const handleCahnge = (e: {
     target: { value: React.SetStateAction<string> };
   }) => {
@@ -30,7 +28,7 @@ const Form = () => {
   const handleClick = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     if (text === '') {
-      setIsWritten(true);
+      act(() => setIsWritten(true));
       return;
     }
     const res = await dispatch(fetchJSONPost(text));
@@ -54,7 +52,7 @@ const Form = () => {
           {isWritten && (
             <p className="alermText">Please fill something in this form!</p>
           )}
-          <button data-testid="post-btn"className="btn" onClick={handleClick}>
+          <button data-testid="post-btn" className="btn" onClick={handleClick}>
             Add
           </button>
           {status === 'Pending' && <Spinner />}
